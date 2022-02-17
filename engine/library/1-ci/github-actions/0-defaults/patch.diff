@@ -1,0 +1,127 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index e69de29..d5aa071 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -0,0 +1,32 @@
++name: Library CI
++
++on:
++  push:
++    branches:
++      - 'feature/**'
++      - 'master'
++
++jobs:
++  build-and-verify:
++    name: Build and Verify
++    runs-on: ubuntu-latest
++
++    env:
++      PACKAGE_REGISTRY_USERNAME: ${{ secrets.PACKAGE_REGISTRY_USERNAME }}
++      PACKAGE_REGISTRY_TOKEN: ${{ secrets.PACKAGE_REGISTRY_TOKEN }}
++
++    steps:
++      - uses: actions/checkout@v2
++      - name: Restore Cache
++        uses: actions/cache@v2
++        with:
++          path: |
++            ~/.gradle/caches
++            ~/.gradle/wrapper
++          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
++          restore-keys: |
++            ${{ runner.os }}-gradle-
++      - name: Unit Test
++        run: ./gradlew library:test library:assemble sample:assembleDebug
++      - name: Build
++        run: ./gradlew build
+\ No newline at end of file
+diff --git a/.github/workflows/publish.yml b/.github/workflows/publish.yml
+index e69de29..76312eb 100644
+--- a/.github/workflows/publish.yml
++++ b/.github/workflows/publish.yml
+@@ -0,0 +1,32 @@
++name: Publish Artifact
++
++on:
++  release:
++    types: [released]
++
++jobs:
++  publish:
++    name: Publish Artifact
++    runs-on: ubuntu-latest
++
++    env:
++      PACKAGE_REGISTRY_USERNAME: ${{ secrets.PACKAGE_REGISTRY_USERNAME }}
++      PACKAGE_REGISTRY_TOKEN: ${{ secrets.PACKAGE_REGISTRY_TOKEN }}
++
++    steps:
++      - uses: actions/checkout@v2
++      - name: Restore Cache
++        uses: actions/cache@v2
++        with:
++          path: |
++            ~/.gradle/caches
++            ~/.gradle/wrapper
++          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
++          restore-keys: |
++            ${{ runner.os }}-gradle-
++      - name: Unit Test
++        run: ./gradlew library:test library:assemble library:assembleDebug
++      - name: Build
++        run: ./gradlew build
++      - name: Publish
++        run: ./gradlew publish
+\ No newline at end of file
+diff --git a/gradle/buildsystem/config.gradle b/gradle/buildsystem/config.gradle
+index e69de29..c9d7d42 100644
+--- a/gradle/buildsystem/config.gradle
++++ b/gradle/buildsystem/config.gradle
+@@ -0,0 +1,9 @@
++ext {
++    libraryConfig = [
++            groupId    : "create.android.app.library",
++            packageUrl : "https://maven.pkg.github.com/create-android-app/library",
++            artifactId : "library",
++            version    : "1.0.0",
++            versionCode: 1
++    ]
++}
+\ No newline at end of file
+diff --git a/gradle/buildsystem/publish.gradle b/gradle/buildsystem/publish.gradle
+index e69de29..a5ef880 100644
+--- a/gradle/buildsystem/publish.gradle
++++ b/gradle/buildsystem/publish.gradle
+@@ -0,0 +1,30 @@
++apply plugin: 'maven-publish'
++
++apply from: '../gradle/buildsystem/config.gradle'
++
++group project.ext.libraryConfig.group
++version project.ext.libraryConfig.version
++
++afterEvaluate {
++    publishing {
++        repositories {
++            maven {
++                name = "GithubPackages"
++                url = uri("${libraryConfig.packageUrl}")
++                credentials {
++                    username = project.findProperty("gpr.user") ?: System.getenv("PACKAGE_REGISTRY_USERNAME")
++                    password = project.findProperty("gpr.key") ?: System.getenv("PACKAGE_REGISTRY_TOKEN")
++                }
++            }
++        }
++
++        publications {
++            aar(MavenPublication) {
++                groupId "${libraryConfig.groupId}"
++                artifactId "${libraryConfig.artifactId}"
++                version "${libraryConfig.version}"
++                from components["release"]
++            }
++        }
++    }
++}
+\ No newline at end of file

@@ -1,0 +1,50 @@
+diff --git a/gradle/libs.versions.toml b/gradle/libs.versions.toml
+index e69de29..1c5b510 100644
+--- a/gradle/libs.versions.toml
++++ b/gradle/libs.versions.toml
+@@ -0,0 +1,16 @@
++[versions]
++
++[libraries]
++androidx-core-ktx = 'androidx.core:core-ktx:1.7.0'
++androidx-appcompat = 'androidx.appcompat:appcompat:1.4.1'
++google-android-material = 'com.google.android.material:material:1.5.0'
++
++junit = 'junit:junit:4.13.2'
++androidx-test-junit = 'androidx.test.ext:junit:1.1.3'
++androidx-test-expresso = 'androidx.test.espresso:espresso-core:3.4.0'
++
++[bundles]
++androidx = ["androidx-core-ktx", "androidx-appcompat"]
++uitesting = ["androidx-test-junit", "androidx-test-expresso"]
++
++[plugins]
+\ No newline at end of file
+diff --git a/library/build.gradle b/library/build.gradle
+index ba06891..82a9cf0 100644
+--- a/library/build.gradle
++++ b/library/build.gradle
+@@ -31,10 +31,8 @@ android {
+ 
+ dependencies {
+ 
+-    implementation 'androidx.core:core-ktx:1.7.0'
+-    implementation 'androidx.appcompat:appcompat:1.4.1'
+-    implementation 'com.google.android.material:material:1.5.0'
++    implementation libs.bundles.androidx
++    implementation libs.google.android.material
+     testImplementation 'junit:junit:4.13.2'
+-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
++    androidTestImplementation libs.bundles.uitesting
+ }
+\ No newline at end of file
+diff --git a/settings.gradle b/settings.gradle
+index 92dcac2..c84afdf 100644
+--- a/settings.gradle
++++ b/settings.gradle
+@@ -14,3 +14,4 @@ dependencyResolutionManagement {
+ }
+ rootProject.name = "Library"
+ include ':library'
++enableFeaturePreview('VERSION_CATALOGS')

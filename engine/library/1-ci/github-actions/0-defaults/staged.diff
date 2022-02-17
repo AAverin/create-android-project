@@ -1,0 +1,12 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+new file mode 100644
+index 0000000..e69de29
+diff --git a/.github/workflows/publish.yml b/.github/workflows/publish.yml
+new file mode 100644
+index 0000000..e69de29
+diff --git a/gradle/buildsystem/config.gradle b/gradle/buildsystem/config.gradle
+new file mode 100644
+index 0000000..e69de29
+diff --git a/gradle/buildsystem/publish.gradle b/gradle/buildsystem/publish.gradle
+new file mode 100644
+index 0000000..e69de29
