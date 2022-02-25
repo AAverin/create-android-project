@@ -1,0 +1,5 @@
+{
+  "type": "library",
+  "ci": ["github"],
+  "publish": ["github_gradle_package"]
+}

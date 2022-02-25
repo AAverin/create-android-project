@@ -1,0 +1,1 @@
+module.exports.shouldRun = (config, logger) => config.isKtLint

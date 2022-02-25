@@ -3,6 +3,7 @@ const { hideBin } = require("yargs/helpers")
 const { createAndroidProject } = require("./src")
 
 const argv = yargs(hideBin(process.argv))
+  .config()
   .alias("t", "type")
   .describe("t", "Type of project to generate.")
   .choices("t", ["project", "library"])
@@ -11,6 +12,12 @@ const argv = yargs(hideBin(process.argv))
     description: "Kind of CI integration",
     default: "",
     choices: ["github", ""],
+    type: "array",
+  })
+  .option("publish", {
+    description: "Publication setup",
+    default: "",
+    choices: ["github_gradle_package", "maven", ""],
     type: "array",
   })
   .option("common", {

@@ -6,6 +6,7 @@ const shell = require("shelljs")
 const GEN = "generated"
 
 const commandsProcessor = require("./commandsProcessor")
+const projectGenerator = require("./projectGenerator")
 const { Config } = require("./config")
 const { Log } = require("./log")
 
@@ -14,27 +15,20 @@ module.exports.createAndroidProject = async (args) => {
   const logger = Log(config)
   const { log, logVerbose } = logger
 
-  if (fs.existsSync(GEN)) {
-    logVerbose("Clearing folder", GEN)
-    await fsp.rm(GEN, {
-      recursive: true,
-    })
-  }
-  await fsp.mkdir(GEN)
-
-  log("createAndroidProject", args)
+  log("createAndroidProject", config)
 
   var mainFolder = ""
-  if (config.isProject()) {
+  if (config.isProject) {
     mainFolder = "project"
-    logVerbose("CAP: Project")
-  } else if (config.isLibrary()) {
+    logVerbose("Create Android Project: Project")
+  } else if (config.isLibrary) {
     mainFolder = "library"
-    logVerbose("CAP: Library")
+    logVerbose("Create Android Project: Library")
   }
 
   const commands = [
     "git init",
+    "touch readme.md",
     ...commandsProcessor.process({
       shell: shell,
       folder: mainFolder,
@@ -43,5 +37,7 @@ module.exports.createAndroidProject = async (args) => {
     }),
   ]
 
-  logVerbose("Commands", commands)
+  logVerbose("All commands", commands)
+
+  await projectGenerator.generate(commands, GEN, logger)
 }

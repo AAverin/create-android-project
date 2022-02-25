@@ -14,39 +14,47 @@ Having the following tree structure:
 /0-base
   /0-defaults
     commit.msg
+    binary.diff
+    staged.diff
     patch.diff
   /1-version-catalogs
     commit.msg
-    stage.diff
+    binary.diff
+    staged.diff
     patch.diff
 /1-ci
   /github-actions
     rule.js
     /0-defaults
       commit.msg
-      stage.diff
+      binary.diff
+      staged.diff
       patch.diff
     /1-ktlint
       commit.msg
-      stage.diff
+      binary.diff
+      staged.diff
       patch.diff
   /travis
     rule.js
     /0-defaults
       commit.msg
-      stage.diff
+      binary.diff
+      staged.diff
       patch.diff
 /2-common
   /1-ktlint
     /0-defaults
       commit.msg
-      stage.diff
+      binary.diff
+      staged.diff
       patch.diff
 /3-deps
   /1-library
     /0-defaults
       commit.msg
-      stage.diff
+      binary.diff
+      staged.diff
       patch.diff
 ```
 
@@ -72,7 +80,8 @@ Commands are executed in the local `generated` folder one by one, resulting in a
 The outcome is an Android or Android Library project set up according to selected configuration.
 
 
-The engine is a CLI that accepts different parameters:
+The engine is a CLI that accepts different parameters.
+It's also possible to define those in `config.json` file and run as `node engine.js --config ./config.json`
 
 ```
 > node engine.js --help                           
@@ -108,10 +117,16 @@ Do you want your library to be added to the configuration?
 
 Here are a few steps to take:
 
-1. Prepare an isolated git patch that integrates your library
+0. Checkout the project and switch to the correct tag, deciding between `base`, `ci`, `common` and `deps`
+1. Prepare all the changes needed to integrate your library 
   - include your library into gradle dependencies
   - include R8/proguard rules update 
-2. Put your patch into a correct folder so that engine could apply your patch correctly.
+2. To make sure all binary files and created folders can be recreated generate patch with:
+    ```
+      git diff --binary --staged > staged.diff &&
+      git diff --binary > patch.diff
+    ```
+2. Put your patches into a correct folder corresponding to the selected `tag` so that engine could apply your patch correctly.
 3. Make a PR with:
   - description of your library
   - new rules added to the CLI

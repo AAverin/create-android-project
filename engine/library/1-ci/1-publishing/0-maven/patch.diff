@@ -1,0 +1,96 @@
+diff --git a/gradle/publishing.gradle b/gradle/publishing.gradle
+index e69de29..e8675f7 100644
+--- a/gradle/publishing.gradle
++++ b/gradle/publishing.gradle
+@@ -0,0 +1,76 @@
++apply plugin: 'maven-publish'
++
++//library version, Major.Minor.Patch
++ext {
++    libraryConfig = {
++        groupId = ""
++        artifactId = ""
++        version = "1.0.0"
++    }
++}
++
++task androidJavadocs(type: Javadoc) {
++    source = sourceSets.main.java.srcDirs
++    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
++    options.addStringOption('Xdoclint:none', '-quiet')
++    android.libraryVariants.all { variant ->
++        if (variant.name == 'release') {
++            owner.classpath += variant.getCompileClasspath()
++        }
++    }
++    exclude '**/gif/README'
++    exclude '**/R.html', '**/R.*.html', '**/index.html'
++}
++
++task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
++    archiveClassifier.set("javadoc")
++    from androidJavadocs.destinationDir
++}
++
++task androidSourcesJar(type: Jar) {
++    archiveClassifier.set("sources")
++    from sourceSets.main.java.srcDirs
++}
++
++afterEvaluate {
++    publishing {
++        repositories {
++            maven {
++                name = "<PROVIDE_MAVEN_NAME>"
++                url = uri("<PROVIDE_MAVEN_URL>")
++                credentials {
++                    username = "<PROVIDE_MAVEN_USERNAME>"
++                    password = "<PROVIDE_MAVEN_PASSWORD>"
++                }
++            }
++        }
++
++        publications {
++            aar(MavenPublication) {
++                groupId "${libraryConfig.groupId}"
++                //GroupId for the library, eg. create.android.project.library
++                artifactId "${libraryConfig.artifactId}" //artifactId for the library, eg. myFancyLibrary
++                version "${libraryConfig.version}"
++                from components["release"]
++
++                //Include sources & javadocs
++                artifact androidJavadocsJar
++                artifact androidSourcesJar
++
++                //Manually add dependencies or they will be missing from resulting package
++                // https://discuss.gradle.org/t/maven-publish-doesnt-include-dependencies-in-the-project-pom-file/8544
++                pom.withXml {
++                    def dependenciesNode = asNode().appendNode('dependencies')
++
++                    //Iterate over the implementation dependencies, adding a <dependency> node for each
++                    configurations.implementation.allDependencies.each {
++                        def dependencyNode = dependenciesNode.appendNode('dependency')
++                        dependencyNode.appendNode('groupId', it.group)
++                        dependencyNode.appendNode('artifactId', it.name)
++                        dependencyNode.appendNode('version', it.version)
++                    }
++                }
++            }
++        }
++    }
++}
+\ No newline at end of file
+diff --git a/library/build.gradle b/library/build.gradle
+index 31edd33..2e384d2 100644
+--- a/library/build.gradle
++++ b/library/build.gradle
+@@ -35,4 +35,6 @@ dependencies {
+     implementation libs.google.android.material
+     testImplementation libs.bundles.testing
+     androidTestImplementation libs.bundles.uitesting
+-}
+\ No newline at end of file
++}
++
++apply from: '../gradle/publishing.gradle'
+\ No newline at end of file

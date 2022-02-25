@@ -1,0 +1,68 @@
+diff --git a/.github/workflows/publish.yml b/.github/workflows/publish.yml
+index e69de29..cdf6bc6 100644
+--- a/.github/workflows/publish.yml
++++ b/.github/workflows/publish.yml
+@@ -0,0 +1,42 @@
++name: Publish Artifact
++
++on:
++  release:
++    types: [released]
++
++jobs:
++  publish:
++    name: Publish Artifact
++    runs-on: ubuntu-latest
++
++    env:
++      PACKAGE_REGISTRY_USERNAME: ${{ secrets.PACKAGE_REGISTRY_USERNAME }}
++      PACKAGE_REGISTRY_TOKEN: ${{ secrets.PACKAGE_REGISTRY_TOKEN }}
++
++    steps:
++      - uses: actions/checkout@v2
++
++      - name: Set up JDK 12
++        uses: actions/setup-java@v1
++        with:
++          java-version: 12
++
++      - name: Grant execute permission for gradlew
++        run: chmod +x gradlew
++
++      - name: Gradle Cache
++        uses: actions/cache@v2
++        with:
++          path: |
++            ~/.gradle/caches
++            ~/.gradle/wrapper
++          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
++          restore-keys: |
++            ${{ runner.os }}-gradle-
++
++      - name: Tests
++        run: ./gradlew library:test library:assemble sample:assembleDebug
++      - name: Build
++        run: ./gradlew build
++      - name: Publish
++        run: ./gradlew publish
+\ No newline at end of file
+diff --git a/gradle/publishing.gradle b/gradle/publishing.gradle
+index e8675f7..36047cd 100644
+--- a/gradle/publishing.gradle
++++ b/gradle/publishing.gradle
+@@ -36,11 +36,11 @@ afterEvaluate {
+     publishing {
+         repositories {
+             maven {
+-                name = "<PROVIDE_MAVEN_NAME>"
+-                url = uri("<PROVIDE_MAVEN_URL>")
++                name = "GithubPackages"
++                url = uri("https://maven.pkg.github.com/<ENTER_GITHUB_REPOSITORY_NAME>")
+                 credentials {
+-                    username = "<PROVIDE_MAVEN_USERNAME>"
+-                    password = "<PROVIDE_MAVEN_PASSWORD>"
++                    username = project.findProperty("gpr.user") ?: System.getenv("PACKAGE_REGISTRY_USERNAME")
++                    password = project.findProperty("gpr.key") ?: System.getenv("PACKAGE_REGISTRY_TOKEN")
+                 }
+             }
+         }

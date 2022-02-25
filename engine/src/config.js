@@ -1,18 +1,17 @@
 const Config = (args) => {
-  const isProject = () => args.type == "project"
-  const isLibrary = () => args.type == "library"
-  const isVerbose = () => args.v == true
-
-  const isGithubActions = () => args.ci.includes("github")
-
-  const isKtLint = () => args.common.includes("ktlint")
-
   return {
-    isProject: isProject,
-    isLibrary: isLibrary,
-    isVerbose: isVerbose,
-    isGithubActions: isGithubActions,
-    isKtLint: isKtLint,
+    isProject: args.type == "project",
+    isLibrary: args.type == "library",
+    isVerbose: args.v == true,
+    ci: {
+      publish: {
+        maven: args.publish && args.publish.includes("maven"),
+        githubPackage:
+          args.publish && args.publish.includes("github_gradle_package"),
+      },
+      githubActions: args.ci && args.ci.includes("github"),
+    },
+    ktlint: args.common && args.common.includes("ktlint"),
   }
 }
 

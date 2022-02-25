@@ -1,6 +1,6 @@
 module.exports.Log = (config) => {
   const logVerbose = (...msgs) => {
-    if (config.isVerbose()) console.log(...msgs)
+    if (config.isVerbose) console.log(...msgs)
   }
 
   const log = (...msgs) => {

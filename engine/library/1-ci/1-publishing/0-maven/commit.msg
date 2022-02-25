@@ -1,0 +1,1 @@
+Create-Android-Project Library: Maven publishing support

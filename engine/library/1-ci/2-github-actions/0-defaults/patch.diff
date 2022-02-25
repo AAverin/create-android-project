@@ -1,0 +1,39 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index e69de29..85a9af1 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -0,0 +1,33 @@
++name: Library CI
++
++on:
++  push:
++
++jobs:
++  build-and-verify:
++    name: Build and Verify
++    runs-on: ubuntu-latest
++
++    steps:
++      - uses: actions/checkout@v2
++
++      - name: Set up JDK 12
++        uses: actions/setup-java@v1
++        with:
++          java-version: 12
++
++      - name: Grant execute permission for gradlew
++        run: chmod +x gradlew
++
++      - name: Gradle Cache
++        uses: actions/cache@v2
++        with:
++          path: |
++            ~/.gradle/caches
++            ~/.gradle/wrapper
++          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
++          restore-keys: |
++            ${{ runner.os }}-gradle-
++
++      - name: Unit & Build Test
++        run: ./gradlew library:test library:assemble sample:assembleDebug
+\ No newline at end of file
