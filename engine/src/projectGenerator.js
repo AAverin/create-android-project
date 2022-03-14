@@ -24,8 +24,6 @@ const runCommands = async (commands, logger) => {
   })
 }
 
-module.exports.runCommands = runCommands
-
 module.exports.generate = async (commands, target, logger) => {
   await clearTarget(target, logger)
   shell.cd(target)

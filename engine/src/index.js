@@ -11,28 +11,12 @@ const { Config } = require('./config')
 const { Log } = require('./log')
 
 module.exports.createAndroidProject = async args => {
+  const rootFolder = shell.pwd()
   const config = Config(args)
   const logger = Log(config)
   const { log, logVerbose } = logger
 
   log('createAndroidProject', config)
-
-  if (config.isForce) {
-    logVerbose(`Create Android Project: Force applying ${config.isForce}`)
-    const commands = [
-      ...commandsProcessor.process({
-        shell: shell,
-        folder: config.isForce,
-        config: config,
-        logger: logger
-      })
-    ]
-
-    logVerbose('Force commands', commands)
-    shell.cd(GEN)
-    await projectGenerator.runCommands(commands, logger)
-    return
-  }
 
   var mainFolder = ''
   if (config.isProject) {

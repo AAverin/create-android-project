@@ -22,11 +22,11 @@ index 0000000..15bfdf8
 +
 +exit 0
 \ No newline at end of file
-diff --git a/buildsystem/githooks/pre-commit.d/empty b/buildsystem/githooks/pre-commit.d/empty
+diff --git a/buildsystem/githooks/pre-commit.d/00-empty b/buildsystem/githooks/pre-commit.d/00-empty
 new file mode 100644
 index 0000000..ff0f842
 --- /dev/null
-+++ b/buildsystem/githooks/pre-commit.d/empty
++++ b/buildsystem/githooks/pre-commit.d/00-empty
 @@ -0,0 +1,2 @@
 +#!/bin/bash
 +# Empty default script
