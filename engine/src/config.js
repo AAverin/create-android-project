@@ -1,5 +1,6 @@
 const Config = (args) => {
   return {
+    isForce: args.force,
     isProject: args.type == "project",
     isLibrary: args.type == "library",
     isVerbose: args.v == true,

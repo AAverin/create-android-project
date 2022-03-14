@@ -1,43 +1,60 @@
-const fs = require("fs")
-const fsp = require("fs/promises")
+const fs = require('fs')
+const fsp = require('fs/promises')
 
-const shell = require("shelljs")
+const shell = require('shelljs')
 
-const GEN = "generated"
+const GEN = 'generated'
 
-const commandsProcessor = require("./commandsProcessor")
-const projectGenerator = require("./projectGenerator")
-const { Config } = require("./config")
-const { Log } = require("./log")
+const commandsProcessor = require('./commandsProcessor')
+const projectGenerator = require('./projectGenerator')
+const { Config } = require('./config')
+const { Log } = require('./log')
 
-module.exports.createAndroidProject = async (args) => {
+module.exports.createAndroidProject = async args => {
   const config = Config(args)
   const logger = Log(config)
   const { log, logVerbose } = logger
 
-  log("createAndroidProject", config)
+  log('createAndroidProject', config)
 
-  var mainFolder = ""
+  if (config.isForce) {
+    logVerbose(`Create Android Project: Force applying ${config.isForce}`)
+    const commands = [
+      ...commandsProcessor.process({
+        shell: shell,
+        folder: config.isForce,
+        config: config,
+        logger: logger
+      })
+    ]
+
+    logVerbose('Force commands', commands)
+    shell.cd(GEN)
+    await projectGenerator.runCommands(commands, logger)
+    return
+  }
+
+  var mainFolder = ''
   if (config.isProject) {
-    mainFolder = "project"
-    logVerbose("Create Android Project: Project")
+    mainFolder = 'project'
+    logVerbose('Create Android Project: Project')
   } else if (config.isLibrary) {
-    mainFolder = "library"
-    logVerbose("Create Android Project: Library")
+    mainFolder = 'library'
+    logVerbose('Create Android Project: Library')
   }
 
   const commands = [
-    "git init",
-    "touch readme.md",
+    'git init',
+    'touch readme.md',
     ...commandsProcessor.process({
       shell: shell,
       folder: mainFolder,
       config: config,
-      logger: logger,
-    }),
+      logger: logger
+    })
   ]
 
-  logVerbose("All commands", commands)
+  logVerbose('All commands', commands)
 
   await projectGenerator.generate(commands, GEN, logger)
 }

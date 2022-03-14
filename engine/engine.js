@@ -31,6 +31,11 @@ const argv = yargs(hideBin(process.argv))
     description: "logging",
     type: "boolean",
   })
+  .option("force", {
+    alias: "f",
+    description: "Force apply provided folder.",
+    type: "string"
+  })
   .help("help").argv
 
 ;(async () => {

@@ -1,12 +1,12 @@
-const fs = require("fs")
-const fsp = require("fs/promises")
-const shell = require("shelljs")
+const fs = require('fs')
+const fsp = require('fs/promises')
+const shell = require('shelljs')
 
 const clearTarget = async (target, logger) => {
   if (fs.existsSync(target)) {
-    logger.logVerbose("Clearing folder", target)
+    logger.logVerbose('Clearing folder', target)
     await fsp.rm(target, {
-      recursive: true,
+      recursive: true
     })
   }
   await fsp.mkdir(target)
@@ -14,15 +14,17 @@ const clearTarget = async (target, logger) => {
 
 const runCommands = async (commands, logger) => {
   logger.logVerbose(shell.pwd())
-  commands.forEach((command) => {
-    logger.logVerbose("calling command,", command)
+  commands.forEach(command => {
+    logger.logVerbose('calling command,', command)
     if (shell.exec(command).code !== 0) {
-      logger.log("Failed to execute command", command)
-      shell.echo("Error: Command failed")
+      logger.log('Failed to execute command', command)
+      shell.echo('Error: Command failed')
       shell.exit(1)
     }
   })
 }
+
+module.exports.runCommands = runCommands
 
 module.exports.generate = async (commands, target, logger) => {
   await clearTarget(target, logger)
