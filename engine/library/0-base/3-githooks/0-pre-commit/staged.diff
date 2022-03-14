@@ -1,0 +1,33 @@
+diff --git a/buildsystem/githooks/pre-commit b/buildsystem/githooks/pre-commit
+new file mode 100755
+index 0000000..15bfdf8
+--- /dev/null
++++ b/buildsystem/githooks/pre-commit
+@@ -0,0 +1,17 @@
++#!/bin/bash
++# Will run all scripts from pre-commit.d one after the other in alphabetic order
++# If any of the scripts returns anything but 0, will abort commit
++# https://stackoverflow.com/questions/26624368/handle-multiple-pre-commit-hooks
++
++cd "$(dirname "$0")/pre-commit.d"
++
++for hook in *; do
++    bash $hook
++    RESULT=$?
++    if [ $RESULT != 0 ]; then
++        echo "pre-commit.d/$hook returned non-zero: $RESULT, abort commit"
++        exit $RESULT
++    fi
++done
++
++exit 0
+\ No newline at end of file
+diff --git a/buildsystem/githooks/pre-commit.d/empty b/buildsystem/githooks/pre-commit.d/empty
+new file mode 100644
+index 0000000..ff0f842
+--- /dev/null
++++ b/buildsystem/githooks/pre-commit.d/empty
+@@ -0,0 +1,2 @@
++#!/bin/bash
++# Empty default script
+\ No newline at end of file

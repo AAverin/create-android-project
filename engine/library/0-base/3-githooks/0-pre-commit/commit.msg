@@ -1,0 +1,1 @@
+CAP Library. Base. Support multiple pre-commit hooks.

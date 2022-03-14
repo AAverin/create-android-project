@@ -44,12 +44,18 @@ const processPatches = ({ shell, logger }) => {
   const commands = [];
   logger.logVerbose("processPatches");
   const files = shell.ls();
-  if (files.includes("staged.diff")) {
+  if (
+    files.includes("staged.diff") &&
+    fs.statSync(`${shell.pwd()}/staged.diff`).size > 0
+  ) {
     commands.push(
       `git apply --ignore-space-change --ignore-whitespace ${shell.pwd()}/staged.diff`
     );
   }
-  if (files.includes("patch.diff")) {
+  if (
+    files.includes("patch.diff") &&
+    fs.statSync(`${shell.pwd()}/patch.diff`).size > 0
+  ) {
     commands.push(
       `git apply --ignore-space-change --ignore-whitespace ${shell.pwd()}/patch.diff`
     );
@@ -64,9 +70,7 @@ const processPatches = ({ shell, logger }) => {
   if (files.includes("commit.msg")) {
     commands.push(`git commit -m "${shell.cat("commit.msg")}"`);
   } else {
-    commands.push(
-      `git commit -m "Create-Android-Project Library: Applying patch"`
-    );
+    commands.push(`git commit -m "CAP. Applying patch"`);
   }
   return commands;
 };
