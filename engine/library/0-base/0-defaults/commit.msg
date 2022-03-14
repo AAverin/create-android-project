@@ -1,1 +1,1 @@
-Create-Android-Project Library: Initial setup
+CAP Library. Base. Initial setup

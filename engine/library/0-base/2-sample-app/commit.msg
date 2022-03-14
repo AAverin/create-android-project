@@ -1,1 +1,1 @@
-Create-Android-Project Library: Sample app
+CAP Library. Base. Sample app

@@ -1,1 +1,1 @@
-Create-Android-Project Library: Maven publishing support
+CAP Library. CI. Maven publishing support

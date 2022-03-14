@@ -1,1 +1,1 @@
-Create-Android-Project Library: Support Version Catalogs
+CAP Library. Base. Support Version Catalogs
